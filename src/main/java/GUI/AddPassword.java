@@ -1,7 +1,10 @@
 package GUI;
 
+import com.example.Objects.AESUtils;
 import com.example.Objects.Password;
 import com.example.Objects.PasswordTableModel;
+
+import javax.crypto.SecretKey;
 
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -16,6 +19,7 @@ import javax.swing.JTextField;
 public class AddPassword extends JFrame{
     private JTextField passwordField;
     private JTextField appField;
+    private SecretKey secretKey;
     
     public AddPassword(PasswordTableModel tableModel) {
         // Nastavení okna
@@ -42,13 +46,23 @@ public class AddPassword extends JFrame{
         confirmButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String password = passwordField.getText(); // Získání textu z pole
-                String app = appField.getText();
-                System.out.println("Heslo bylo uloženo: " + password + "Applikace: " + app); // Můžete nahradit logiku pro uložení hesla
+                try {
+                    secretKey = AESUtils.generateKey();
 
-                tableModel.addPassword(new Password(password, app));
+                    String password = passwordField.getText(); // Získání textu z pole
+                    String app = appField.getText();
 
-                dispose(); // Zavření okna
+                    String encryptedPassword = AESUtils.encrypt(password, secretKey);
+
+                    System.out.println("Heslo: " + password + " bylo uloženo jako " + encryptedPassword + " Applikace: " + app); // Můžete nahradit logiku pro uložení hesla
+
+                    tableModel.addPassword(new Password(encryptedPassword, app));
+
+                    dispose(); // Zavření okna
+                } catch (Exception a) {
+                    a.printStackTrace();
+                }
+                
             }
         });
         
