@@ -7,6 +7,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
+import com.example.Objects.AESUtils;
 import com.example.Objects.Password;
 import com.example.Objects.PasswordTableModel;
 
@@ -30,10 +31,6 @@ public class MainFrame extends JFrame{
         JTable table = new JTable(tableModel);
         JScrollPane scrollPane = new JScrollPane(table); // Přidání posuvníku
         add(scrollPane, BorderLayout.CENTER); // Tabulka je umístěna do středu
-
-        // Přidání několika ukázkových dat
-        tableModel.addPassword(new Password("heslo123", "Email"));
-        tableModel.addPassword(new Password("tajneheslo", "Bankovnictví"));
 
         // Aktualizace tabulky, aby se zobrazila nová data
         tableModel.fireTableDataChanged();
@@ -64,9 +61,38 @@ public class MainFrame extends JFrame{
             }
             }
         });
+
+        JButton showPassword = new JButton("Odhal vybraný");
+        showPassword.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+            int selectedRow = table.getSelectedRow();
+            if (selectedRow != -1) {
+                int modelRow = table.convertRowIndexToModel(selectedRow);
+                Password selectedPassword = tableModel.getPasswordAt(modelRow);
+                try {
+                    String decryptedPassword = AESUtils.decrypt(
+                        selectedPassword.getPassword(), 
+                        selectedPassword.getSecretKey()
+                    );
+                    JOptionPane.showMessageDialog(
+                        MainFrame.this, 
+                        "Dešifrované heslo: " + decryptedPassword
+                    );
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(
+                        MainFrame.this, 
+                        "Chyba při dešifrování hesla: " + ex.getMessage()
+                    );
+                }
+            } else {
+                JOptionPane.showMessageDialog(MainFrame.this, "Vyberte řádek pro odhalení hesla.");
+            }
+        }
+    });
         
         buttonPanel.add(addButton); // Přidání tlačítka do panelu
         buttonPanel.add(deleteButton);
+        buttonPanel.add(showPassword);
         add(buttonPanel, BorderLayout.SOUTH); // Vycentrované tlačítko pod tabulkou
 
         setVisible(true);

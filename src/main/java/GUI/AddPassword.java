@@ -56,7 +56,7 @@ public class AddPassword extends JFrame{
 
                     System.out.println("Heslo: " + password + " bylo uloženo jako " + encryptedPassword + " Applikace: " + app); // Můžete nahradit logiku pro uložení hesla
 
-                    tableModel.addPassword(new Password(encryptedPassword, app));
+                    tableModel.addPassword(new Password(encryptedPassword, app, secretKey));
 
                     dispose(); // Zavření okna
                 } catch (Exception a) {

@@ -53,4 +53,8 @@ public class PasswordTableModel extends AbstractTableModel {
             fireTableRowsDeleted(rowIndex, rowIndex); // Aktualizace tabulky
         }
     }
+
+    public Password getPasswordAt(int rowIndex) {
+        return passwords.get(rowIndex);
+    }
 }
